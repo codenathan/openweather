@@ -13,7 +13,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(WeatherProviderInterface::class, OpenWeatherService::class);
+        $this->app->singleton(WeatherProviderInterface::class, function ($app) {
+           $config = config('services.openweather');
+            return new OpenWeatherService(
+                baseUrl: $config['base_url'],
+                apiKey:  $config['api_key'],
+                defaultCountry: $config['default_country']
+            );
+
+        });
     }
 
     /**
