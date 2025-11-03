@@ -1,0 +1,60 @@
+<?php
+
+namespace Tests\Unit;
+
+use App\Services\OpenWeatherService;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Tests\TestCase;
+
+class OpenWeatherServiceTest extends TestCase
+{
+    public function test_get_weather_by_city_returns_successful_response()
+    {
+        // Http fake
+        Http::fake([
+            'https://api.openweathermap.org/data/2.5/weather*' => Http::response([
+                'cod' => 200,
+                'name' => 'London',
+                'sys' => ['country' => 'GB'],
+                'main' => ['temp' => 15, 'humidity' => 70, 'feels_like' => 14],
+                'weather' => [['description' => 'clear sky', 'icon' => '01d']],
+                'wind' => ['speed' => 5, 'deg' => 90],
+            ], 200),
+        ]);
+
+        Cache::shouldReceive('remember')
+            ->once()
+            ->andReturnUsing(function ($key, $ttl, $callback) {
+                return $callback();
+            });
+
+        $service = new OpenWeatherService();
+        $result = $service->getWeatherByCity('London');
+
+        $this->assertEquals('London', $result['name']);
+    }
+
+
+    public function test_get_weather_by_city_returns_error_response_on_failure()
+    {
+        $fakeErrorResponse = ['cod' => 404, 'message' => 'city not found'];
+
+        Http::fake([
+            'https://api.openweathermap.org/data/2.5/weather*' => Http::response($fakeErrorResponse, 404),
+        ]);
+
+        Cache::shouldReceive('remember')
+            ->once()
+            ->andReturnUsing(function ($key, $ttl, $callback) {
+                return $callback();
+            });
+
+        $service = new OpenWeatherService();
+        $result = $service->getWeatherByCity('InvalidCity');
+
+        $this->assertIsArray($result);
+        $this->assertTrue($result['error']);
+        $this->assertEquals('city not found', $result['message']);
+    }
+}
