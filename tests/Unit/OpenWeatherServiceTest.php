@@ -29,7 +29,11 @@ class OpenWeatherServiceTest extends TestCase
                 return $callback();
             });
 
-        $service = new OpenWeatherService();
+        $service = new OpenWeatherService(
+            baseUrl: 'https://api.openweathermap.org/data/2.5',
+            apiKey: 'fake-key',
+            defaultCountry: 'GB',
+        );
         $result = $service->getWeatherByCity('London');
 
         $this->assertEquals('London', $result['name']);
@@ -50,7 +54,12 @@ class OpenWeatherServiceTest extends TestCase
                 return $callback();
             });
 
-        $service = new OpenWeatherService();
+        $service = new OpenWeatherService(
+            baseUrl: 'https://api.openweathermap.org/data/2.5',
+            apiKey: 'fake-key',
+            defaultCountry: 'GB',
+        );
+
         $result = $service->getWeatherByCity('InvalidCity');
 
         $this->assertIsArray($result);
