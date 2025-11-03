@@ -14,9 +14,9 @@ class OpenWeatherService implements WeatherProviderInterface
 
     public function __construct()
     {
-        $this->baseUrl = "https://api.openweathermap.org/data/2.5";
+        $this->baseUrl = config('services.openweather.base_url');
         $this->apiKey = config('services.openweather.api_key');
-        $this->defaultCountry = "GB";
+        $this->defaultCountry = config('services.openweather.default_country');
     }
 
     public function getWeatherByCity(string $city): array
