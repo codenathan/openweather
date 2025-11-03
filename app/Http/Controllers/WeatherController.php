@@ -28,7 +28,7 @@ class WeatherController extends Controller
         $weather = $this->weatherService->getWeatherByCity($request->get('city'));
 
         return Inertia::render('Weather/Index', [
-            'weather' => $weather,
+            'weather' => is_array($weather) ? $weather : $weather->toArray(),
             'city' => $request->get('city'),
         ]);
     }

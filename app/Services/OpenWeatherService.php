@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTO\WeatherData;
 use App\Interfaces\WeatherProviderInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -13,7 +14,7 @@ class OpenWeatherService implements WeatherProviderInterface
     {
     }
 
-    public function getWeatherByCity(string $city): array
+    public function getWeatherByCity(string $city): WeatherData|array
     {
         $query = "{$city},{$this->defaultCountry}";
 
@@ -24,9 +25,28 @@ class OpenWeatherService implements WeatherProviderInterface
                 'units' => 'metric',
             ]);
 
-            return $response->successful()
-                ? $response->json()
-                : ['error' => true, 'message' => $response->json('message')];
+            if (!$response->successful()) {
+                return [
+                    'error' => true,
+                    'message' => $response->json('message', 'Unable to fetch weather data'),
+                ];
+            }
+
+            $data = $response->json();
+
+            return new WeatherData(
+                city: $data['name'],
+                country: $data['sys']['country'],
+                temperature: $data['main']['temp'],
+                feelsLike: $data['main']['feels_like'],
+                description: $data['weather'][0]['description'],
+                humidity: $data['main']['humidity'],
+                windSpeed: $data['wind']['speed'],
+                windDeg: $data['wind']['deg'],
+                pressure: $data['main']['pressure'],
+                clouds: $data['clouds']['all'],
+                icon: $data['weather'][0]['icon'] ?? null,
+            );
         });
     }
 }
