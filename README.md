@@ -6,7 +6,7 @@ current weather conditions for that location via the Open Weather Map API.
 
 - composer install
 - npm install
-- npm run prod
+- npm run build
 
 # API Key
 
