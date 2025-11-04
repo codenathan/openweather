@@ -37,7 +37,6 @@ class OpenWeatherServiceTest extends TestCase
         );
         $result = $service->getWeatherByCity('London');
 
-        // Assert the DTO
         $this->assertInstanceOf(WeatherData::class, $result);
         $this->assertEquals('London', $result->city);
         $this->assertEquals('GB', $result->country);

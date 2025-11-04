@@ -31,7 +31,6 @@ class WeatherControllerTest extends TestCase
             'wind' => ['speed' => 5, 'deg' => 90],
         ];
 
-        // Mock the WeatherProviderInterface
         $this->instance(
             WeatherProviderInterface::class,
             Mockery::mock(WeatherProviderInterface::class, function ($mock) use ($fakeWeather) {
@@ -63,7 +62,6 @@ class WeatherControllerTest extends TestCase
             'message' => 'city not found'
         ];
 
-        // Mock the WeatherProviderInterface
         $this->instance(
             WeatherProviderInterface::class,
             Mockery::mock(WeatherProviderInterface::class, function ($mock) use ($fakeError) {
